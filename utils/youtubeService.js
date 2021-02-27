@@ -22,11 +22,12 @@ module.exports = {
         })
         return videos;
     },
-    video: async (q) => {
+    video: async (videoIds) => {
         const videos = await youtubeAPI.videos.list({
             ...defaultSearchOptions,
-            q
+            part: 'contentDetails',
+            id: videoIds
         })
-        return videos;
+         return videos;
     }
 }
