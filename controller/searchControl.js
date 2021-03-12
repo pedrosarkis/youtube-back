@@ -21,30 +21,36 @@ const convertYouTubeDurations = (duration)  => {
     const hours = parseInt(extracted[1], 10) || 0;
     const minutes = parseInt(extracted[2], 10) || 0;
     const seconds = parseInt(extracted[3], 10) || 0;
-    return (hours * 3600 ) + (minutes * 60 ) + (seconds );
+    return (hours * 3600 ) + (minutes * 60 ) + (seconds);
 }
 
 
 const searchQuery = async (req, res) => {
     const {q} = req.body;
     const videos = await youtubeService.search(q);
-    const videoIds = videos.data.items.map(videoId => {
-        return videoId.id.videoId;
+
+    const videoIds = videos.map(({id: {videoId}}) => {
+        return videoId;
     }).join(',');
 
     const videoInfo = await youtubeService.video(videoIds);
+
     let completeText = '';
-    videos.data.items.forEach((videoData, index) => {
-        videoInfo.data.items[index].thumbNail = videoData.snippet.thumbnails;
-        videoInfo.data.items[index].title = videoData.snippet.title;
-        videoInfo.data.items[index].description = videoData.snippet.description;
-        completeText += videoData.snippet.title + videoData.snippet.description; 
-        videoInfo.data.items[index].contentDetails.duration = convertYouTubeDurations(videoInfo.data.items[index].contentDetails.duration);
+
+    videos.forEach(({ snippet: {thumbnails, title, description}}, index) => {
+        const videoInformation = videoInfo[index];
+
+        videoInformation.thumbNail = thumbnails;
+        videoInformation.title = title;
+        videoInformation.description = description;
+        completeText += title + description; 
+        videoInformation.contentDetails.duration = convertYouTubeDurations(videoInformation.contentDetails.duration);
     })
 
     const mostUsedWords = getMostUsedWords(completeText);
+
     const responseVideoData = {
-        items: videoInfo.data.items,
+        items: videoInfo,
         mostUsedWords
     }
     return res.send(responseVideoData);
