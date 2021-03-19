@@ -25,7 +25,6 @@ const search = async (q, nextPage = false, data = []) => {
 }
 
 const video = async (videoIds, data = []) => {
-       
     delete defaultSearchOptions.pageToken;
     let allIds = videoIds.split(',');
     const fiftyIds = allIds.splice(0, 50).join(',');

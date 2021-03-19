@@ -16,8 +16,8 @@ const getMostUsedWords = (text) => {
 }
 
 const convertYouTubeDurations = (duration)  => {
-    const time_extractor = /([0-9]*H)?([0-9]*M)?([0-9]*S)?$/;
-    const extracted = time_extractor.exec(duration);
+    const timeExtractor = /([0-9]*H)?([0-9]*M)?([0-9]*S)?$/;
+    const extracted = timeExtractor.exec(duration);
     const hours = parseInt(extracted[1], 10) || 0;
     const minutes = parseInt(extracted[2], 10) || 0;
     const seconds = parseInt(extracted[3], 10) || 0;
@@ -37,14 +37,16 @@ const searchQuery = async (req, res) => {
 
     let completeText = '';
 
-    videos.forEach(({ snippet: {thumbnails, title, description}}, index) => {
-        const videoInformation = videoInfo[index];
-
-        videoInformation.thumbNail = thumbnails;
-        videoInformation.title = title;
-        videoInformation.description = description;
-        completeText += title + description; 
-        videoInformation.contentDetails.duration = convertYouTubeDurations(videoInformation.contentDetails.duration);
+    videos.forEach(({ snippet: {thumbnails, title, description}, id: {videoId}}, index) => {
+        videoInfo.forEach(videoInfo => {
+            if(videoInfo.id === videoId) {
+                videoInfo.thumbNail = thumbnails;
+                videoInfo.title = title;
+                videoInfo.description = description;
+                completeText += title + description;
+                videoInfo.contentDetails.duration = convertYouTubeDurations(videoInfo.contentDetails.duration);
+            }
+        })
     })
 
     const mostUsedWords = getMostUsedWords(completeText);
