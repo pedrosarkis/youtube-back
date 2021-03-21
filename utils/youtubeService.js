@@ -6,7 +6,6 @@ const youtubeAPI = google.youtube({
     auth: KEY
 })
 
-
 const defaultSearchOptions = {
     maxResults: 50,
     part: 'snippet',
