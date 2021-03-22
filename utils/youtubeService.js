@@ -14,18 +14,23 @@ const defaultSearchOptions = {
 
 const search = async (q, nextPage = false, data = []) => {
     if(nextPage) defaultSearchOptions.pageToken = nextPage;
+
     const videos = await youtubeAPI.search.list({
         ...defaultSearchOptions,
         q
     })
+
     data = [...videos.data.items, ...data];
+
     if(data.length === 200) return data;
+
     return await search(q, videos.data.nextPageToken, data);
 }
 
 const video = async (videoIds, data = []) => {
     delete defaultSearchOptions.pageToken;
     let allIds = videoIds.split(',');
+
     const fiftyIds = allIds.splice(0, 50).join(',');
 
     allIds = allIds.join(',');
@@ -35,8 +40,11 @@ const video = async (videoIds, data = []) => {
         part: 'contentDetails',
         id: fiftyIds
     })
+
     data = [...videos.data.items, ...data];
+
     if(data.length === 200) return data;
+    
      return await video(allIds, data);
 }
 
