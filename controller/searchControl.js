@@ -27,7 +27,10 @@ const convertYouTubeDurations = (duration)  => {
 
 const searchQuery = async (req, res) => {
     const {q} = req.body;
-    const videos = await youtubeService.search(q);
+
+    const memoizeSearch = youtubeService.memoize(youtubeService.search);
+
+    const videos = await memoizeSearch(q);
 
     const videoIds = videos.map(({id: {videoId}}) => {
         return videoId;

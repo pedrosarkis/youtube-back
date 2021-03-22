@@ -12,6 +12,18 @@ const defaultSearchOptions = {
     type: 'video',
 }
 
+const memoize = (fn) => {
+    let cache = {};
+    return async (query) => {
+      if (query in cache) {
+        return cache[query];
+      }
+        const queryResult = await fn(query);
+        cache[query] = queryResult;
+        return queryResult;
+    }
+  } 
+
 const search = async (q, nextPage = false, data = []) => {
     if(nextPage) defaultSearchOptions.pageToken = nextPage;
 
@@ -44,11 +56,12 @@ const video = async (videoIds, data = []) => {
     data = [...videos.data.items, ...data];
 
     if(data.length === 200) return data;
-    
+
      return await video(allIds, data);
 }
 
 module.exports = {
-    search,
-    video
+    memoize,
+    video,
+    search
 }
