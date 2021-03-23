@@ -1,7 +1,7 @@
 'use strict';
 const youtubeService = require('../utils/youtubeService');
 const {clone} = require('../utils/util');
-var LRU = require("lru-cache");
+const LRU = require("lru-cache");
 const optionsCache = { max: 500
               , length: function (n, key) { return n * 2 + key.length }
               , dispose: function (key, n) { n.close() }
