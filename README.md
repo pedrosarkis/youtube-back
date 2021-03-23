@@ -1,6 +1,9 @@
 Para utilizar siga os seguintes passos: <br>
-1 - git clone https://github.com/pedrosarkis/youtubeApiBackend.git
-2 - npm i (para instalar as dependências)
-3 - nodemon app.js
+<ul> 
+  <li> git clone https://github.com/pedrosarkis/youtubeApiBackend.git </li>
+  <li> npm i (para instalar as dependências) </li>
+  <li> nodemon app.jst </li>
+</ul>
+
 
 Caso necessário, troque a porta setada como 8080 no arquivo app.js, na raíz do projeto. 
