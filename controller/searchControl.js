@@ -1,8 +1,17 @@
 'use strict';
 const youtubeService = require('../utils/youtubeService');
+const {clone} = require('../utils/util');
+var LRU = require("lru-cache");
+const optionsCache = { max: 500
+              , length: function (n, key) { return n * 2 + key.length }
+              , dispose: function (key, n) { n.close() }
+              , maxAge: 1000 * 60 * 60 }
+const cache = new LRU(optionsCache);
+ 
+
 
 const getMostUsedWords = (text) => {
-    const words = text.replace(/[.]/g, '').replace(/[^A-Za-z]/g, ' ').split(/\s/);
+    const words = text.replace(/[.]/g, '').replace(/[^A-Za-z]/g, ' ').split(/\s/).filter(word => word);
     const wordsFrequence = {};
     words.forEach(word => {
         if (!wordsFrequence[word]) {
@@ -28,15 +37,18 @@ const convertYouTubeDurations = (duration)  => {
 const searchQuery = async (req, res) => {
     const {q} = req.body;
 
-    const memoizeSearch = youtubeService.memoize(youtubeService.search);
-
-    const videos = await memoizeSearch(q);
+    const videos = await youtubeService.memoizeSearch(q);
+    //Apenas quis testar duas formas de fazer cache, nunca fiz nenhuma profissionalmente, apenas aprendendo.
 
     const videoIds = videos.map(({id: {videoId}}) => {
         return videoId;
     }).join(',');
 
-    const videoInfo = await youtubeService.video(videoIds);
+    const cachedValue = cache.get(q);
+
+    const videoInfo = cachedValue ? clone(cachedValue) : await youtubeService.video(videoIds);
+
+    if(!cachedValue) cache.set(q, clone(videoInfo));
 
     let completeText = '';
 

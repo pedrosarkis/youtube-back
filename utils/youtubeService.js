@@ -22,7 +22,7 @@ const memoize = (fn) => {
         cache[query] = queryResult;
         return queryResult;
     }
-  } 
+  }
 
 const search = async (q, nextPage = false, data = []) => {
     if(nextPage) defaultSearchOptions.pageToken = nextPage;
@@ -39,7 +39,7 @@ const search = async (q, nextPage = false, data = []) => {
     return await search(q, videos.data.nextPageToken, data);
 }
 
-const video = async (videoIds, data = []) => {
+const video = async ( videoIds, data = []) => {
     delete defaultSearchOptions.pageToken;
     let allIds = videoIds.split(',');
 
@@ -57,11 +57,12 @@ const video = async (videoIds, data = []) => {
 
     if(data.length === 200) return data;
 
-     return await video(allIds, data);
+     return await video( allIds, data);
 }
 
+const memoizeSearch = memoize(search);
+
 module.exports = {
-    memoize,
-    video,
-    search
+    memoizeSearch,
+    video
 }
